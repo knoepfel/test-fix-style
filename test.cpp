@@ -1,9 +1,6 @@
 // Just to make a change
 
-#include <vector>
 #include <iostream>
+#include <vector>
 
-int main()
-{
-  const int i = 16;
-}
+int main() { const int i = 16; }
