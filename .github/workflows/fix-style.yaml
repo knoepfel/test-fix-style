@@ -12,23 +12,25 @@ permissions:
 jobs:
   check:
     runs-on: ubuntu-latest
-    name: An example job to comment a PR
+    name: Check for phlexbot token
     if: ${{ github.event.issue.pull_request }}
 
     outputs:
-      status: ${{ steps.check_comment.conclusion }}
+      result: ${{ steps.check_comment.result}}
 
     steps:
       - id: check_comment
         name: Check comment
         run: |
           comment="${{ github.event.comment.body }}"
-          echo $comment | grep -qE '@phlexbot[[:space:]]+style'
+          result=$(echo $comment | grep -qE '@phlexbot[[:space:]]+style' && echo match || echo non_match)
+          echo result="$result" >> $GITHUB_OUTPUT
 
   apply_formatting:
     runs-on: ubuntu-latest
+    name: Apply formatting
     needs: check
-    if: needs.check.outputs.status == 'success'
+    if: needs.check.outputs.result == 'match'
     steps:
       - name: Comment
         uses: thollander/actions-comment-pull-request@v3
