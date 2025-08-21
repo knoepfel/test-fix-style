@@ -16,27 +16,27 @@ jobs:
     if: ${{ github.event.issue.pull_request }}
 
     outputs:
-      result: ${{ steps.check_comment.result}}
+      match_result: ${{ steps.check_comment.outputs.match_result}}
 
     steps:
       - id: check_comment
         name: Check comment
         run: |
           comment="${{ github.event.comment.body }}"
-          result=$(echo $comment | grep -qE '@phlexbot[[:space:]]+style' && echo match || echo non_match)
-          echo result="$result" >> $GITHUB_OUTPUT
+          match_result=$(echo $comment | grep -qE '@phlexbot[[:space:]]+style' && echo match || echo non_match)
+          echo match_result="$match_result" >> $GITHUB_OUTPUT
 
   apply_formatting:
     runs-on: ubuntu-latest
     name: Apply formatting
     needs: check
-    #if: needs.check.outputs.result == 'match'
+    if: needs.check.outputs.match_result == 'match'
     steps:
       - name: Comment
         uses: thollander/actions-comment-pull-request@v3
         with:
           message: |
-            Applying code-formatting: ${{ needs.check.outputs.result }}
+            Applying code-formatting
 
       # - uses: actions/checkout@v4
       #   with:
