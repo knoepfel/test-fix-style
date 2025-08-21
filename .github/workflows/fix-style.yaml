@@ -17,7 +17,8 @@ jobs:
     if: ${{ github.event.issue.pull_request }}
 
     outputs:
-      match_result: ${{ steps.check_comment.outputs.match_result}}
+      match_result: ${{ steps.check_comment.outputs.match_result }}
+      ref_name: ${{ steps.check_comment.outputs.ref_name }}
 
     steps:
       - id: check_comment
@@ -26,6 +27,13 @@ jobs:
           comment="${{ github.event.comment.body }}"
           match_result=$(echo $comment | grep -qE '@phlexbot[[:space:]]+style' && echo match || echo non_match)
           echo match_result="$match_result" >> $GITHUB_OUTPUT
+
+          ISSUE_NUMBER=${{ github.event.issue.number }}
+          REPO="${{ github.repository }}"
+          gh api "repos/$REPO/pulls/$ISSUE_NUMBER" > pr.json
+          echo "ref_name=$(jq -r .head.ref pr.json)" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ github.token }}
 
   apply_formatting:
     runs-on: ubuntu-latest
@@ -42,7 +50,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: phlex-src
-          ref: ${{ github.ref_name }}
+          ref: ${{ needs.check.outputs.ref_name }}
 
       - uses: DoozyX/clang-format-lint-action@v0.20
         with:
