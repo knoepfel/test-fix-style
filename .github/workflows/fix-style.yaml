@@ -30,13 +30,13 @@ jobs:
     runs-on: ubuntu-latest
     name: Apply formatting
     needs: check
-    if: needs.check.outputs.result == 'match'
+    #if: needs.check.outputs.result == 'match'
     steps:
       - name: Comment
         uses: thollander/actions-comment-pull-request@v3
         with:
           message: |
-            Applying code-formatting
+            Applying code-formatting: ${{ needs.check.outputs.result }}
 
       # - uses: actions/checkout@v4
       #   with:
