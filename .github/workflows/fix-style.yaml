@@ -1,7 +1,13 @@
+name: Phlex fix style
+run-name: ${{ github.actor }} fixing code style
+
 on:
   issue_comment:
     types:
       - created
+
+permissions:
+   pull-requests: write
 
 jobs:
   comment_pr:
