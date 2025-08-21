@@ -10,24 +10,44 @@ permissions:
    pull-requests: write
 
 jobs:
-  comment_pr:
+  check:
     runs-on: ubuntu-latest
     name: An example job to comment a PR
     if: ${{ github.event.issue.pull_request }}
+
+    outputs:
+      status: ${{ steps.check_comment.conclusion }}
+
     steps:
-      - name: Check if the comment contains the run command
-        id: check_comment
+      - id: check_comment
+        name: Check comment
         run: |
           comment="${{ github.event.comment.body }}"
-          command="$(echo $comment | sed -nE 's/@phlexbot[[:space:]]+(.+)/\1/p')"
-          echo "command=$command" >> $GITHUB_OUTPUT
+          echo $comment | grep -qE '@phlexbot[[:space:]]+style'
 
-      # - name: Checkout
-      #   if: steps.check_comment.outputs.command != ''
-      #   uses: actions/checkout@v4
-
-      - name: Report result
+  apply_formatting:
+    runs-on: ubuntu-latest
+    needs: check
+    if: needs.check.outputs.status == 'success'
+    steps:
+      - name: Comment
         uses: thollander/actions-comment-pull-request@v3
         with:
           message: |
-            Received: "${{ steps.check_comment.outputs.command }}"
+            Applying code-formatting
+
+      # - uses: actions/checkout@v4
+      #   with:
+      #     path: phlex-src
+      #
+      # - uses: DoozyX/clang-format-lint-action@v0.20
+      #   with:
+      #     source: "./phlex-src"
+      #     clangFormatVersion: 20
+      #     inplace: True
+      #
+      # - uses: EndBug/add-and-commit@v9
+      #   with:
+      #     author_name: "github-actions[bot]"
+      #     author_email: "41898282+github-actions[bot]@users.noreply.github.com"
+      #     message: 'Committing clang-format changes'
