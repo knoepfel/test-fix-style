@@ -8,6 +8,7 @@ on:
 
 permissions:
    pull-requests: write
+   contents: write
 
 jobs:
   check:
@@ -38,18 +39,19 @@ jobs:
           message: |
             Applying code-formatting
 
-      # - uses: actions/checkout@v4
-      #   with:
-      #     path: phlex-src
-      #
-      # - uses: DoozyX/clang-format-lint-action@v0.20
-      #   with:
-      #     source: "./phlex-src"
-      #     clangFormatVersion: 20
-      #     inplace: True
-      #
-      # - uses: EndBug/add-and-commit@v9
-      #   with:
-      #     author_name: "github-actions[bot]"
-      #     author_email: "41898282+github-actions[bot]@users.noreply.github.com"
-      #     message: 'Committing clang-format changes'
+      - uses: actions/checkout@v4
+        with:
+          path: phlex-src
+
+      - uses: DoozyX/clang-format-lint-action@v0.20
+        with:
+          source: "./phlex-src"
+          clangFormatVersion: 20
+          inplace: True
+
+      - uses: EndBug/add-and-commit@v9
+        with:
+          cwd: phlex-src
+          author_name: "github-actions[bot]"
+          author_email: "41898282+github-actions[bot]@users.noreply.github.com"
+          message: 'Committing clang-format changes'
