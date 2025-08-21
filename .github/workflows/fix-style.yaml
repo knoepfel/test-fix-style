@@ -19,7 +19,7 @@ jobs:
         id: check_comment
         run: |
           comment="${{ github.event.comment.body }}"
-          command="$(echo $comment | grep -oE '@phlexbot[[:space:]]+(.+)')"
+          command="$(echo $comment | sed -nE 's/@phlexbot[[:space:]]+(.+)/\1/p')"
           echo "command=$command" >> $GITHUB_OUTPUT
 
       # - name: Checkout
