@@ -3,4 +3,7 @@
 #include <iostream>
 #include <vector>
 
-int main() { const int i = 16; }
+int main() { const int i = 16;
+
+  const double d = 18.;
+}
